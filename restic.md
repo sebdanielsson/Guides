@@ -24,6 +24,11 @@ restic --verbose snapshots
 restic --verbose forget <snapshot>
 ```
 
+## Remove unnecessary data after snapshot deletion
+```
+restic --verbose prune
+```
+
 ## Check integrity of all snapshots and packs
 ```
 restic --verbose check --read-data
