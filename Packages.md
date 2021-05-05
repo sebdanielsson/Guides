@@ -1,12 +1,15 @@
+# wireguard
+wireguard-tools
+
 # Python
-python3 python-wheel python-pip
+python3 python-pip
 
 # Rust
 rust
 
 # Go
-## Arch
+## Go@Arch
 go
 
-## dnf
+## Go@Fedora
 golang

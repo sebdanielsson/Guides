@@ -3,3 +3,4 @@ export RESTIC_REPOSITORY='s3:s3.eu-central-1.wasabisys.com/restic-linode1'
 export AWS_ACCESS_KEY_ID='40VG0W2KCFXU0AE9KL61'
 export AWS_SECRET_ACCESS_KEY='N8CJGq8M0HZ18s7PGlXt3mc6Wr7dAlY0SmSFbOBE'
 export RESTIC_PASSWORD='8Nx89r6!tHe4JRoZ!C4z'
+restic backup /root /compose /var/lib/docker/volumes

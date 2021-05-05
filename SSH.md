@@ -7,7 +7,7 @@ ssh-keygen -f ~/.ssh/id_ed25519 -t ed25519
 
 **Copy your public key to the remote SSH servers** `~/.ssh/authorized_keys`
 ```
-ssh-copy-id -i ~/.ssh/id_ed25519 sebastian@0.0.0.0
+ssh-copy-id -i ~/.ssh/id_ed25519.pub sebastian@0.0.0.0
 ```
 
 **Edit your SSH client to use your new key as your identity `~/.ssh/config`**
