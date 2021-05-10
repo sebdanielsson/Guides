@@ -1,0 +1,44 @@
+func main() {
+	files, err := ioutil.ReadDir("/Users/philipp/export-hugo/content/post")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		f, err := os.Open("/Users/philipp/export-hugo/content/post/" + file.Name())
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		scanner := bufio.NewScanner(f)
+		scanner.Split(bufio.ScanLines)
+		var date, slug string
+
+		for scanner.Scan() {
+			matches := reDate.FindStringSubmatch(scanner.Text())
+			if len(matches) == 2 {
+				date = matches[1]
+			}
+			matches = reSlug.FindStringSubmatch(scanner.Text())
+			if len(matches) == 2 {
+				slug = matches[1]
+			}
+		}
+
+		f.Close()
+
+		t, err := time.Parse(time.RFC3339, date)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		newDir := t.Format("2006-01-02") + "-" + slug
+		if err := os.Mkdir(newDir, 0755); err != nil {
+			fmt.Println(err)
+		}
+		err = os.Rename("/Users/philipp/export-hugo/content/post/"+file.Name(), newDir+"/index.md")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}
