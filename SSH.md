@@ -25,7 +25,7 @@ ssh-add -K ~/.ssh/id_ed25519
 
 **Edit your remote SSH server config `/etc/ssh/sshd_config`**
 ```
-PermitRootLogin without-password
+PermitRootLogin prohibit-password
 PasswordAuthentication no
 ```
 
