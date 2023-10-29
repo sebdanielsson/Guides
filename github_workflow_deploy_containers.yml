@@ -1,0 +1,42 @@
+name: 'Deploy to server'
+on:
+  push:
+    branches:    
+      - 'main'
+  workflow_dispatch:
+jobs:
+  deploy:
+    name: 'Deploy to prod'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3.3.0
+      - name: 'Tailscale'
+        id: tailscale
+        uses: tailscale/github-action@ce41a99162202a647a4b24c30c558a567b926709
+        with:
+          version: 1.32.2
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+          args: --ssh
+      - name: Git pull
+        id: git-pull
+        if: steps.tailscale.outcome == 'success'
+        run: ssh -o StrictHostKeyChecking=no "$SSH_USER"@"$SSH_HOST" 'if [ ! -d "/docker" ]; then git clone https://github.com/SebDanielsson/infra-docker.git /docker ; fi ; cd /docker && git fetch && git checkout main && git pull'
+        env:
+           SSH_HOST: ${{ secrets.SSH_HOSTNAME }}
+           SSH_USER: ${{ secrets.SSH_USER }}
+      - name: Pull latest Docker images
+        id: docker-pull
+        if: steps.tailscale.outcome == 'success'
+        run: ssh "$SSH_USER"@"$SSH_HOST" 'if [ -d "/docker/compose/enabled" ]; then for d in /docker/compose/enabled/*/ ; do (cd "$d" && docker compose pull) ; done ; else echo "/docker/compose/enabled/ not found." ; fi'
+        env:
+           SSH_HOST: ${{ secrets.SSH_HOSTNAME }}
+           SSH_USER: ${{ secrets.SSH_USER }}
+      - name: Start enabled services
+        id: docker-start
+        if: steps.tailscale.outcome == 'success'
+        run: ssh "$SSH_USER"@"$SSH_HOST" 'if [ -d "/docker/compose/enabled" ]; then for d in /docker/compose/enabled/*/ ; do (cd "$d" && docker compose up -d) ; done ; else echo "/docker/compose/enabled/ not found." ; fi'
+        env:
+           SSH_HOST: ${{ secrets.SSH_HOSTNAME }}
+           SSH_USER: ${{ secrets.SSH_USER }}
+      - name: Logout
+        run: sudo tailscale logout

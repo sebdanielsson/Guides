@@ -1,0 +1,32 @@
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_AES_256_GCM_SHA384
+        - TLS_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+      curvePreferences:
+        - CurveP384
+        - X25519
+      sniStrict: true
+http:
+  middlewares:
+    secHeaders:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        frameDeny: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 63072000
+        #contentSecurityPolicy: "default-src 'self' https://*.domain.com/; script-src https://*.domain.com/; style-src 'unsafe-inline' https://*.domain.com/; object-src 'none'; require-trusted-types-for 'script';" # More secure, need to whitelist exceptions
+        #contentSecurityPolicy: "default-src https: 'unsafe-inline'" # Less secure, minimal whitelisting, currently adding CSP per container label.
+        customFrameOptionsValue: SAMEORIGIN
+        referrerPolicy: same-origin
+        PermissionsPolicy: "geolocation=(self), microphone=(), camera=(), fullscreen=*"
+        customResponseHeaders:
+          X-Powered-By: ""
